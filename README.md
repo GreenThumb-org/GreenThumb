@@ -1,7 +1,7 @@
-# GreenThumb
+## GreenThumb
 4BHITS Jahren Projekt- Benedikt Bliem/David Unterberger/Georg Schönerer
 
-# GreenThumb – Technical Agro-Climatic & Weather Simulation Engine
+## GreenThumb – Technical Agro-Climatic & Weather Simulation Engine
 
 ## Project Overview
 A data-driven greenhouse and open-field simulation engine focusing on regional climate impact, thermodynamic balance, and dynamic crop yield modeling using real-world historical weather data (2010–2026).
@@ -36,7 +36,7 @@ A data-driven greenhouse and open-field simulation engine focusing on regional c
 	- water access rights
 	- seasonal market price fluctuations
 	- and winter heating bills
-# Weather Database
+## Weather Database
 [Weather Dataset (2010–2026)](# Global Historical Weather Dataset (2010–2026))
 ```
 Global-Weather-Dataset/
@@ -63,7 +63,7 @@ Global-Weather-Dataset/
 
 ```
 
-# Target Audience
+## Target Audience
 
 People who are trying to learn about agroculture and how different environments affect plants and their price. But who also have a Technical understanding on how to read Data Dashboards.
 They should also understand how different environments and economical variations affect how crops sell sell and grow. The User needs a base Understanding on how different factors affect plants and their value.
