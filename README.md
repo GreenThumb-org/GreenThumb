@@ -30,7 +30,7 @@ Main idea:
 - globe scene for location selection
 - location changes climate, suitable crops and risks
 - production system = Open Field or Greenhouse
-- 3D 3rd person view: walk around, inspect fields, interact with equipment
+- 3D first person view: walk around, inspect fields, interact with equipment
 - dashboard / tablet for data
 
 - Farm: 4 fields
@@ -133,7 +133,7 @@ Different crops / varieties:
 
 ### Soil types
 
-- Sand, Sandy Loam, Loam, Clay Loam, Clay
+- Sand, Sandy Loam, Loam, Silt Loam, Clay Loam, Clay
 
 Effects:
 
@@ -150,6 +150,20 @@ Effects:
 - player can use soil test
 - shows pH, N, P, K, moisture etc.
 - player has to interpret it before deciding what to do
+
+### Soil picking
+
+- player can pick their regions specific soils (maybe 4 per region)
+
+### Region Soils Idea
+
+| Region category | Possible field profiles to consider |
+| --- | --- |
+| Cold / Nordic | Loam, sandy loam, locally wetter or poorly drained soils |
+| Temperate / Europe | Loam, silt loam, clay loam, sandy loam |
+| Hot / Dry | Sandy soils, sandy loam, loam; locally other textures |
+| Hot / Humid | Loam, clay loam, clay, weathered tropical soils |
+| East Asian / Seasonal | Mixed profiles depending on local geology and landscape |
 
 ## Water Management
 
