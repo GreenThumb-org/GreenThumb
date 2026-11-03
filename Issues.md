@@ -1,345 +1,320 @@
-# GreenThumb - GitHub Kanban Board Issues
+# GreenThumb - Technical GitHub Kanban Board Issues
 
 ## Topic 1 - Starting a Game and Choosing a Region
 
 Issue US-01: Implement Region Selection & Globe Scene
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to choose a region before starting a farm so that I can experience different growing conditions[cite: 1].
+- **Description:** Build an interactive 3D globe scene allowing the user to select from available geographic locations (e.g., Reykjavik, London, Phoenix, Singapore, Tokyo). Lock in the selected location's regional climate profile and initialize the corresponding weather dataset for the session.
 - **Acceptance Criteria:**
-  - The player can choose from the available locations in the globe scene[cite: 1].
-  - Only one location is active in a game[cite: 1].
-  - The selected location determines the weather data used in that game[cite: 1].
-  - The player can see a short summary of the location's climate[cite: 1].
+  - Globe scene visually displays available locations.
+  - Selecting a location sets it as the active scene data source.
+  - Climate summary UI displays historical average temperatures, rainfall patterns, and weather risks upon location hover/click.
 <---->
 
 Issue US-03: Implement Season Initialization & Farm Setup
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to start a new farming season in spring so that I can plan, plant, manage and harvest crops through the season[cite: 1].
+- **Description:** Initialize the seasonal simulation loop starting in Spring. Set up the environment scene with four distinct, editable field game objects and kick off the state tracking managers.
 - **Acceptance Criteria:**
-  - A new game begins at the defined start of the season[cite: 1].
-  - The player starts with four fields[cite: 1].
-  - The season progresses through crop planning, growth, harvest and end-of-season recap[cite: 1].
+  - New game session instantiates at day 0 of the Spring season.
+  - Instantiates four playable field data models.
+  - Triggers the global time/season manager loop across planning, growth, harvest, and recap states.
 <---->
 
 Issue US-02: Display Regional Climate Characteristics
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to see the main climate characteristics of a region so that I can make informed crop choices[cite: 1].
+- **Description:** Create the regional profile UI widget to parse and display climate data (temperature ranges, precipitation, heat/frost risk ratings) derived from the selected region's dataset.
 - **Acceptance Criteria:**
-  - The region view shows relevant conditions such as temperature, rainfall patterns and frost or heat risk[cite: 1].
-  - The information reflects the selected location's data[cite: 1].
+  - Regional info panel dynamically reads data from the active city climate file.
+  - Correctly displays metrics for temperature ranges, seasonal rainfall, and risk factors.
 <---->
 
 ## Topic 2 - Farm and Field Inspection
 
 Issue US-04: Implement First-Person Farm Movement & Tablet Interaction
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to move around the farm in a first-person view so that I can inspect fields and interact with the farming world[cite: 1].
+- **Description:** Implement a 3D first-person controller (WASD + mouse look) enabling player movement around the farm terrain. Add raycast interaction to open the data tablet UI when approaching fields or equipping the device.
 - **Acceptance Criteria:**
-  - The player can move around the farm[cite: 1].
-  - All fields can be reached and identified[cite: 1].
-  - The player can interact with the tablet to open info of specific fields[cite: 1].
+  - First-person controller allows navigation across the entire farm map.
+  - All four field zones feature collider bounds and visual identifiers.
+  - Interacting with a field object or triggering the tablet button opens the detailed Field Info UI.
 <---->
 
 Issue US-05: Implement Field State Tracking & Isolated Inspection
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to inspect each field separately so that I can understand its soil, crop and current condition[cite: 1].
+- **Description:** Design an independent `FieldState` class/struct per field to track soil texture, moisture %, NPK levels, pH, current crop, and growth progress. Ensure state updates are strictly isolated per field instance.
 - **Acceptance Criteria:**
-  - Each field has its own field state[cite: 1].
-  - The field view shows soil type, moisture, nutrient status, crop and growth stage where applicable[cite: 1].
-  - A change to one field does not incorrectly change the state of another field[cite: 1].
+  - Four independent `FieldState` instances exist in memory.
+  - Field inspection UI displays moisture, NPK values, pH, and crop status specific to the target field.
+  - Modifying one field's parameters (e.g., irrigating Field 1) leaves other field instances unchanged.
 <---->
 
 Issue US-06: Implement Soil Characteristics & Texture Effects
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to see the soil type of each field so that I can understand how it affects water, roots and crop suitability[cite: 1].
+- **Description:** Implement soil texture enum logic (`Sand`, `SandyLoam`, `Loam`, `ClayLoam`, `Clay`) to adjust mathematical coefficients for water retention capacity and drainage speed.
 - **Acceptance Criteria:**
-  - Fields can use simplified soil types: Sand, Sandy Loam, Loam, Clay Loam and Clay[cite: 1].
-  - Soil type influences water storage and drainage[cite: 1].
-  - The game explains the main effects of the field's soil type[cite: 1].
+  - Soil types directly alter soil moisture depletion/retention formulas.
+  - UI displays soil type name and brief description of its hydraulic properties.
 <---->
 
 ## Topic 3 - Weather and Time
 
 Issue US-08: Integrate Historical Weather Datasets
 - **Priority:** High (MVP)
-- **Description:** As a player, I want the simulation to use real weather records so that crop conditions are based on real-world environmental variation rather than only random events[cite: 1].
+- **Description:** Build a CSV weather data parser to load local historical weather records based on the selected city (2010–2026 dataset). Implement default fallback values if specific data entries are missing or corrupted.
 - **Acceptance Criteria:**
-  - The game loads weather data for the selected location[cite: 1].
-  - The game has a defined fallback behavior if data is unavailable[cite: 1].
+  - Weather manager reads and parses historical temperature, precipitation, solar radiation, humidity, and wind data.
+  - Provides mock/fallback weather data if the dataset fails to load.
 <---->
 
 Issue US-09: Build Time Scale Controller & Progression Loop
 - **Priority:** High (MVP)
-- **Description:** As a player, I want time to progress at a playable speed so that I can manage crops without waiting too long[cite: 1].
+- **Description:** Construct a central `TimeManager` class to increment in-game hours and days. Implement configurable time-step scales (e.g., 10 seconds real-time = 1 hour vs. 40 seconds = 1 hour) for gameplay testing.
 - **Acceptance Criteria:**
-  - The game advances through in-game hours and days[cite: 1].
-  - The team can test the planned time scales: 10 seconds per in-game hour and 40 seconds per in-game hour[cite: 1].
-  - Weather and crop simulation update consistently as time advances[cite: 1].
+  - Clock advances hours and days continuously based on delta time.
+  - Exposes configurable variables to adjust the real-seconds-per-in-game-hour ratio.
+  - Dispatches tick events to weather and crop simulation controllers on each hour step.
 <---->
 
 Issue US-07: Build Live Weather Dashboard
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to view the current weather so that I can decide how to manage my crops[cite: 1].
+- **Description:** Create a live weather dashboard UI that subscribes to the `TimeManager` and `WeatherManager` to output temperature, precipitation, humidity, solar radiation, and wind values.
 - **Acceptance Criteria:**
-  - The weather dashboard can show temperature, precipitation, humidity, solar radiation and wind when available[cite: 1].
-  - The values update as in-game time progresses[cite: 1].
-  - Weather data comes from the selected location's dataset[cite: 1].
+  - UI components bind to real-time simulation output.
+  - Values refresh automatically on every hourly simulation tick.
 <---->
 
 Issue US-10: Provide Weather Risk Information & Guide Integration
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to be able to access information about relevant weather conditions so that I can prepare for frost, heat, drought or heavy rain[cite: 1].
+- **Description:** Build an in-game alert and documentation lookup system that flags upcoming weather events (frost, heatwave, drought, heavy rain) and cross-references crop vulnerability indices.
 - **Acceptance Criteria:**
-  - The given information combined with the guide book can help with figuring out which fields or crop stages may be affected[cite: 1].
+  - UI flags active/impending weather risk warnings.
+  - Links risk warnings to relevant guidebook topics explaining crop impact.
 <---->
 
 ## Topic 4 - Crop Selection and Planting
 
 Issue US-11: Crop Selection UI & Suitability Checks
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to choose which crop to grow in each field so that I can plan the farm according to the region and soil conditions[cite: 1].
+- **Description:** Build the crop selection menu listing MVP crops (`Wheat`, `Potatoes`, `Peas`, `Rice`) along with environmental requirement thresholds (soil type suitability, temperature range, water demand).
 - **Acceptance Criteria:**
-  - The MVP offers Wheat, Potatoes, Peas and Rice, subject to regional suitability[cite: 1].
-  - The game shows basic crop requirements before the player confirms the choice[cite: 1].
+  - Selection UI lists all four MVP crops.
+  - Displays base crop requirements and flags incompatibilities with the current field state or climate.
 <---->
 
 Issue US-14: Implement Planting Action & Field Initialization
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to plant a selected crop in a field so that its growth cycle can begin[cite: 1].
+- **Description:** Implement the `PlantCrop` command. Lock the target field to the chosen crop type, set initial growth parameters to zero, and swap the visual mesh/texture of the field ground model.
 - **Acceptance Criteria:**
-  - The player can plant an eligible crop in a field[cite: 1].
-  - A field cannot grow multiple main crops at once in the MVP[cite: 1].
-  - Planting sets the crop's starting state and growth stage[cite: 1].
-  - The planted crop is visible in the farm view[cite: 1].
+  - Executing `PlantCrop` assigns a single active crop model to the field state.
+  - Prevents planting on already occupied fields.
+  - Instantiates initial crop growth graphics on the 3D field model.
 <---->
 
 Issue US-15: Crop Stage Progression Engine
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to see the crop's current growth stage so that I know what the plant needs at different times[cite: 1].
+- **Description:** Build the crop development controller using a Growing Degree Day (GDD) or thermal time model to advance crops through stages: Germination -> Seedling -> Vegetative -> Flowering/Formation -> Maturity -> Harvest Window.
 - **Acceptance Criteria:**
-  - The crop progresses through germination, seedling, vegetative growth, flowering or formation, maturity and harvest window as applicable[cite: 1].
-  - Growth depends on elapsed time and environmental conditions[cite: 1].
-  - The current stage is visible in the dashboard[cite: 1].
+  - Crop stage updates sequentially based on accumulated heat units and simulation ticks.
+  - Environmental stress factors slow down or arrest stage progression.
+  - Current stage state is updated in the database and visible in the tablet UI.
 <---->
 
 Issue US-13: Planting Conditions Assessment System
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to check whether conditions are suitable for planting so that I can avoid planting at an unsuitable time[cite: 1].
+- **Description:** Create a pre-planting diagnostic check that evaluates soil temperature, soil moisture, and seasonal date against optimal crop parameters to generate a suitability score (Suitable / Risky / Unsuitable).
 - **Acceptance Criteria:**
-  - Planting information shows the crop, date or growth window, temperature, frost risk and soil moisture[cite: 1].
-  - The game indicates whether conditions are suitable, risky or unsuitable[cite: 1].
-  - Planting outside the recommended window can affect crop development[cite: 1].
+  - Calculates suitability based on real-time environmental data vs. crop constants.
+  - Displays visual indicator status (Green/Yellow/Red) in the planting menu.
+  - Out-of-window planting applies growth/yield penalty multipliers.
 <---->
 
 ## Topic 5 - Soil, Water and Nutrients
 
 Issue US-18: Implement Water Balance & Irrigation Action
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to irrigate a field when needed so that I can reduce drought stress without overwatering[cite: 1].
+- **Description:** Implement the soil water balance equation: `Moisture_t = Moisture_t-1 + Rain + Irrigation - Evapotranspiration - Drainage`. Provide an `Irrigate` player action that adds water volume to a field.
 - **Acceptance Criteria:**
-  - The player can apply irrigation to a selected field[cite: 1].
-  - Irrigation increases soil moisture according to the field's soil properties[cite: 1].
-  - High water stress can reduce growth or yield potential[cite: 1].
-  - Excess moisture can cause waterlogging or root stress[cite: 1].
-  - Rainfall, drainage and crop water use also affect soil moisture[cite: 1].
+  - `Irrigate()` function adds specified moisture % based on field soil capacity.
+  - Evapotranspiration scales dynamically with ambient temperature and solar radiation.
+  - Low moisture triggers drought stress; moisture above field capacity causes waterlogging/root stress.
 <---->
 
 Issue US-19: Implement NPK Nutrient Tracking & Fertilization
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to apply nutrients based on field conditions so that I can prevent or correct nutrient deficiencies[cite: 1].
+- **Description:** Track Nitrogen (N), Phosphorus (P), and Potassium (K) values separately in `FieldState`. Implement a `Fertilize` action to replenish NPK levels and apply deficit/excess yield penalties.
 - **Acceptance Criteria:**
-  - The player can apply a simplified fertilizer action to a selected field[cite: 1].
-  - Nitrogen, phosphorus and potassium are tracked separately in the simulation[cite: 1].
-  - Deficiency can reduce growth or yield potential[cite: 1].
-  - Excess nutrients do not provide unlimited growth and can create negative effects[cite: 1].
-  - The dashboard provides feedback about nutrient status after the action[cite: 1].
+  - N, P, and K values decrement as crops consume nutrients per growth stage.
+  - `Fertilize()` action restores NPK levels up to defined maximums.
+  - Deficient NPK levels reduce growth rate; extreme over-fertilization triggers toxicity penalties.
 <---->
 
 Issue US-17: Build Soil Testing Diagnostic Tool
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to inspect soil measurements so that I can diagnose field conditions before taking action[cite: 1].
+- **Description:** Create a soil sampling tool/action that reads current field parameters (Moisture %, N, P, K, pH) and outputs a detailed diagnostic panel on the tablet UI.
 - **Acceptance Criteria:**
-  - A soil inspection can show moisture, nitrogen, phosphorus, potassium and pH[cite: 1].
-  - Organic matter and compaction can be included when implemented[cite: 1].
-  - Results are specific to the selected field[cite: 1].
-  - The values help the player identify possible issues but do not automatically select a treatment[cite: 1].
+  - Triggering a soil test fetches exact field metrics.
+  - Displays breakdown of Moisture, NPK, pH, and soil compaction levels without automatic solution prompts.
 <---->
 
 Issue US-20: Soil pH & Compaction Modeling
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to understand how pH and soil condition affect crops so that I can identify problems that cannot be fixed by simply adding water or fertilizer[cite: 1].
+- **Description:** Add soil pH and compaction modifiers to the nutrient uptake formula, reducing effective NPK absorption when pH falls outside optimal crop tolerances.
 - **Acceptance Criteria:**
-  - The field dashboard displays pH[cite: 1].
-  - Unsuitable pH can affect nutrient availability or crop performance in a simplified way[cite: 1].
-  - Soil compaction or organic matter can influence crop/soil behavior if included in the simulation[cite: 1].
-  - The game provides a clear explanation when one of these factors is limiting growth[cite: 1].
+  - Tablet UI displays field pH and compaction metrics.
+  - Sub-optimal pH scales down crop nutrient intake efficiency.
+  - System generates diagnostic warning notes when pH limits growth.
 <---->
 
 ## Topic 6 - Crop Rotation and Soil Protection
 
 Issue US-21: Multi-Season Crop Rotation & Residual Tracking
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to choose crops across fields over multiple seasons so that I can learn how crop rotation affects soil and crop health[cite: 1].
+- **Description:** Persist field state properties across seasons (retaining nutrient balances and pest build-up factors) to calculate rotation bonuses or continuous monoculture penalties.
 - **Acceptance Criteria:**
-  - The player can select crops independently for the fields[cite: 1].
-  - The game remembers the state of the field (minerals; etc.) affecting future crops[cite: 1].
-  - Repeated crops can influence nutrient demand or pest/disease pressure in a simplified way[cite: 1].
-  - Rotation effects are shown in field information or the season report[cite: 1].
+  - Field data models retain residual attributes between season resets.
+  - Planting the same crop class sequentially increases base pest vulnerability and specific nutrient depletion rates.
+  - Rotation historical log displays past crop sequences per field.
 <---->
 
 Issue US-22: Legume Nitrogen Fixation Model
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to include peas or other legumes in a rotation so that I can learn how different crop groups affect soil nutrient cycles[cite: 1].
+- **Description:** Code specific nitrogen-fixation logic for legume crops (`Peas`). Upon harvesting/terminating a pea crop, add a residual Soil Nitrogen bonus to that field state for the following crop cycle.
 - **Acceptance Criteria:**
-  - Peas are available in the MVP crop list[cite: 1].
-  - The rotation model represents a simplified benefit of legumes to the following crop's nitrogen availability[cite: 1].
-  - The effect is not presented as unlimited or guaranteed fertilizer replacement[cite: 1].
+  - Planting and harvesting Peas adds a fixed +N bonus to the target field's baseline soil state.
+  - Nitrogen increase is logged and shown in the soil breakdown summary.
 <---->
 
 Issue US-23: Cover Crop Off-Season System
 - **Priority:** Low (Optional / Later)
-- **Description:** As a player, I want to plant a cover crop between main crops so that I can protect soil and improve soil health[cite: 1].
+- **Description:** Implement an off-season cover crop state that can be planted post-harvest to reduce soil erosion and nitrogen leaching over winter.
 - **Acceptance Criteria:**
-  - The player can choose a cover crop during an available off-season window[cite: 1].
-  - Cover crops can provide simplified soil-cover, erosion-protection or nutrient-cycling benefits[cite: 1].
-  - Benefits depend on choosing a suitable time and allowing the cover crop to establish[cite: 1].
+  - Player can toggle cover crop planting during the post-harvest phase.
+  - Cover crops active during off-season reduce N-leaching rates and stabilize compaction.
 <---->
 
 ## Topic 7 - Crop Health and Diagnosis
 
 Issue US-24: Crop Stress Indicators & Visual Feedback
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to notice when crop health or growth is deteriorating so that I can investigate before the problem becomes severe[cite: 1].
+- **Description:** Implement a global stress calculation engine for crops (accumulating Drought, Waterlogging, Heat, Frost, Nutrient Deficit, and Pest stress factors) and trigger corresponding UI alerts/3D plant visual changes.
 - **Acceptance Criteria:**
-  - Crops can display visible or dashboard-based stress indicators[cite: 1].
-  - Possible stress causes include drought, waterlogging, frost, heat, nutrient deficiency, pests and disease[cite: 1].
-  - Indicators reflect the simulation state rather than appearing randomly[cite: 1].
+  - Aggregates stress factors into an overall health percentage value.
+  - Stress conditions update visual shader/texture states on 3D crop models (e.g., yellowing leaves for low N or drought).
 <---->
 
 Issue US-25: Problem Investigation UI & Symptom Inspector
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to investigate an unhealthy crop using field observations and dashboard data so that I can identify the most likely cause[cite: 1].
+- **Description:** Create a crop diagnostic UI panel where players can review symptom clues (e.g., leaf discoloration, stunted root growth) alongside historical weather data to infer root causes.
 - **Acceptance Criteria:**
-  - The player can inspect crop symptoms and relevant field data[cite: 1].
-  - Weather history can help explain recent frost, heat or heavy rain effects[cite: 1].
-  - Symptoms can have more than one possible cause where appropriate[cite: 1].
-  - The game gives enough clues to make a reasoned diagnosis without always revealing the answer immediately[cite: 1].
+  - UI displays observed physical crop symptoms.
+  - Links historical weather logs (recent temperature extremes or rain spikes) to aid in manual diagnosis.
 <---->
 
 Issue US-27: Pest Population Tracking & Field Scouting
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to monitor pest populations and choose a suitable response so that I can prevent avoidable crop damage[cite: 1].
+- **Description:** Implement a dynamic pest population model (`PestLevel`) influenced by ambient temperature and humidity. Add a "Scout Field" action that reveals current pest intensity.
 - **Acceptance Criteria:**
-  - The player can scout a field and see a simplified pest level or population estimate[cite: 1].
-  - Pest pressure can increase or decrease over time depending on conditions and actions[cite: 1].
-  - The player can wait and monitor or apply an available control method[cite: 1].
-  - Treatment effects and possible downsides are shown in the simulation[cite: 1].
-  - Control decisions are based on likely crop damage, not money or economic thresholds[cite: 1].
+  - `PestLevel` grows dynamically based on favorable weather formulas.
+  - "Scout Field" action updates the tablet with estimated pest population counts.
+  - Pest control actions reduce pest counts with calculated efficacy rates.
 <---->
 
 Issue US-29: Integrated Pest Management (IPM) System
 - **Priority:** Low (Optional / Later)
-- **Description:** As a player, I want to compare monitoring, prevention and treatment options so that I learn not to apply pest control automatically[cite: 1].
+- **Description:** Build an IPM control module offering multiple pest management actions (biological control, physical barriers, chemical sprays) with distinct speed, cost, and secondary soil impact parameters.
 - **Acceptance Criteria:**
-  - The player can inspect pest pressure before treating[cite: 1].
-  - Available control options have different effectiveness, speed or side effects (potentially)[cite: 1].
-  - The game does not present chemical control as always bad or organic/biological control as always best[cite: 1].
+  - UI offers multiple treatment methods with differing efficacy and side-effect profiles.
+  - Provides monitoring thresholds to guide treatment necessity.
 <---->
 
 Issue US-28: Disease Risk & Treatment Mechanics
 - **Priority:** Low (Optional / Later)
-- **Description:** As a player, I want to recognize and respond to crop disease risks so that I can reduce damage to my crops[cite: 1].
+- **Description:** Implement a fungal/bacterial disease risk model driven by prolonged high relative humidity and leaf wetness duration.
 - **Acceptance Criteria:**
-  - Disease risk can be influenced by weather, humidity crop condition[cite: 1].
-  - The player can inspect disease indicators[cite: 1].
-  - At least one preventive or treatment action can be implemented if this feature is included[cite: 1].
-  - Disease pressure can affect crop health, yield or quality[cite: 1].
+  - High humidity + rain triggers increased `DiseaseRisk` percentage.
+  - Disease outbreaks apply direct health and quality penalties to infected fields.
+  - Preventive/curative fungicide treatment action reduces active disease levels.
 <---->
 
 ## Topic 8 - Growth, Yield and Harvest
 
 Issue US-30: Environmental Impact Engine on Yield & Growth
 - **Priority:** High (MVP)
-- **Description:** As a player, I want weather, soil and management decisions to affect crop development so that I can learn the consequences of farming choices[cite: 1].
+- **Description:** Create the main yield potential calculation function: `Yield = BaseYield * TempFactor * WaterFactor * NutrientFactor * HealthFactor`.
 - **Acceptance Criteria:**
-  - Temperature, water, nutrients and crop health influence growth[cite: 1].
-  - Stress has different effects depending on crop and growth stage where implemented[cite: 1].
-  - Growth and yield are not determined by time alone[cite: 1].
-  - The dashboard or season report identifies the main causes of reduced performance[cite: 1].
+  - Growth and final yield potential calculate continuously on each hourly tick.
+  - Stress events permanently truncate max achievable yield based on growth stage sensitivity.
+  - Log details exact loss contributors for season review integration.
 <---->
 
 Issue US-31: Harvest Window & Maturity Indicators
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to see when a crop is approaching maturity so that I can plan the harvest at a suitable time[cite: 1].
+- **Description:** Track crop maturity state and activate a designated `Harvest Window` phase upon reaching full maturity.
 - **Acceptance Criteria:**
-  - The crop has a maturity state or harvest window[cite: 1].
-  - The dashboard shows the current maturity/harvest status[cite: 1].
-  - Harvesting too early or too late can affect yield or quality[cite: 1].
+  - Reaching 100% maturity shifts crop state to `Harvest Ready`.
+  - Tablet UI highlights fields in the optimal harvest window.
+  - Remaining unharvested past the window triggers over-ripening quality decay.
 <---->
 
 Issue US-32: Harvest Action & Field State Reset
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to harvest a mature field so that I can complete the crop cycle and review the result[cite: 1].
+- **Description:** Implement the `HarvestField` command. Finalize and store yield weight (kg/ha) and quality grade, clear crop game objects from the field, and set field state to idle/post-harvest.
 - **Acceptance Criteria:**
-  - Harvest records the field's yield and quality result[cite: 1].
-  - The field becomes available for post-harvest management or the next season[cite: 1].
+  - `HarvestField` calculates final crop output metrics.
+  - Clears crop models from the 3D field scene.
+  - Resets field status so a new crop can be planted in subsequent cycles.
 <---->
 
 Issue US-33: Crop Quality Calculation Model
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want to see crop quality separately from total yield so that I understand that a large harvest is not always a high-quality harvest[cite: 1].
+- **Description:** Implement a secondary quality metric (Grade A, B, C, Damaged) computed independently of raw yield weight based on stress history during sensitive flowering/maturity stages.
 - **Acceptance Criteria:**
-  - The harvest result includes yield and a quality indicator[cite: 1].
-  - Quality can be affected by maturity, weather damage, water stress, pests or disease[cite: 1].
+  - Harvest output includes both total weight (kg/ha) and Quality Rating.
+  - Severe weather, water stress, or pest damage degrades final quality rating independently of mass.
 <---->
 
 ## Topic 9 - Dashboard and Learning Feedback
 
 Issue US-34: Main Farming Dashboard UI
 - **Priority:** High (MVP)
-- **Description:** As a player, I want to view important field, crop and weather data in one place so that I can make informed decisions[cite: 1].
+- **Description:** Design and implement the primary data tablet interface consolidating soil metrics, crop health %, growth stages, live weather, and pest warnings into a clean tabbed layout.
 - **Acceptance Criteria:**
-  - The dashboard includes soil, crop stage/health, current weather and relevant pest or disease information[cite: 1].
-  - Data corresponds to the currently selected field and region[cite: 1].
-  - Values and labels use understandable units and descriptions[cite: 1].
-  - The dashboard shows essential data first and avoids overwhelming the player[cite: 1].
+  - Displays selected field's soil parameters, crop status, live weather, and pest metrics.
+  - Uses standard agricultural units (e.g., °C, mm, %, kg/ha).
+  - Clean UI architecture prioritizing immediate key diagnostics.
 <---->
 
 Issue US-36: End-of-Season Report Generator
 - **Priority:** High (MVP)
-- **Description:** As a player, I want an end-of-season report so that I can understand how well I managed the fields and what I should change next season[cite: 1].
+- **Description:** Build an end-of-season summary window that parses seasonal log data to show total yield, average quality, water spent, fertilizer applied, and key stress event timeline explanations.
 - **Acceptance Criteria:**
-  - The report includes yield, quality, water use, nutrient status/use, pest or disease pressure and soil condition where tracked[cite: 1].
-  - It highlights important stress events during the season[cite: 1].
-  - It explains major effects on yield or quality, such as drought during a sensitive growth stage[cite: 1].
-  - The report contains no currency, sales, prices, profit or business metrics[cite: 1].
+  - Generates a full seasonal summary report upon season end.
+  - Highlights specific stress root causes (e.g., "Yield decreased 15% due to 4 days of drought in Vegetative stage").
+  - Strictly excludes all financial/monetary/profit metrics.
 <---->
 
 Issue US-35: Decision Feedback & Tablet Help Integration
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want feedback after making a farming decision so that I can learn from its consequences[cite: 1].
+- **Description:** Add contextual feedback popups and tablet help logs that explain the outcome of recent player interventions (e.g., fertilizing, irrigating).
 - **Acceptance Criteria:**
-  - The game shows the help and info on the tablet[cite: 1].
-  - Feedback explains the most relevant cause where the simulation can determine it[cite: 1].
-  - The game avoids claiming certainty when multiple causes may explain a problem[cite: 1].
+  - Interventions generate informative confirmation logs in the tablet feedback tab.
+  - Explanations outline primary simulation cause-and-effect pathways.
 <---->
 
 Issue US-37: Agricultural Concepts Glossary & In-Game Guide
 - **Priority:** Medium (MVP Support)
-- **Description:** As a player, I want short explanations of agricultural concepts when they are relevant so that I can understand the science behind my decisions[cite: 1].
+- **Description:** Build an in-game wiki/guidebook system accessible via the tablet covering core agronomic concepts (Soil Textures, NPK, Crop Rotation, IPM, GDD).
 - **Acceptance Criteria:**
-  - Explanations are available for key concepts such as soil texture, waterlogging, NPK, crop rotation and pest monitoring[cite: 1].
-  - Explanations use simple language and connect to the current field or decision[cite: 1].
-  - Explanations do not interrupt normal gameplay unnecessarily[cite: 1].
+  - Guidebook UI allows searching and navigating topic articles.
+  - Articles provide educational breakdowns connected to gameplay mechanics.
 <---->
 
 ## Topic 10 - Optional Production Systems and Expansion
 
 Issue US-40: Game Save & Load Persistence
 - **Priority:** Low (Optional / Later)
-- **Description:** As a player, I want to save my farm and continue later so that I do not lose my progress[cite: 1].
+- **Description:** Build a JSON serialization system to save and restore all simulation states, active region, current date/time, individual field attributes, crop progress, and weather history to disk.
 - **Acceptance Criteria:**
-  - A save stores the selected location, in-game date, field states, crops, soil conditions and relevant simulation state[cite: 1].
-  - Loading restores the saved state consistently[cite: 1].
-  - If saving is not feasible for the first prototype, this story can be moved out of the MVP[cite: 1].
+  - Save system serializes all game data models into a persistent save file.
+  - Load system completely reconstructs farm, field, weather, and tablet states upon loading.
 <---->
