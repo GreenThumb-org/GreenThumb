@@ -31,9 +31,9 @@ public class WeatherDataManager : MonoBehaviour
         GetWeatherData getWeatherData = new GetWeatherData();
         getWeatherData.GetData(DataFileName, SelectedYear);
         Debug.Log("<------>");
-        Debug.Log(Manager.WeatherDataPoints[0].time);
-        Debug.Log(Manager.WeatherDataPoints[0].temprature);
-        Debug.Log(Manager.WeatherDataPoints[0].precipitation);
-        Debug.Log(Manager.WeatherDataPoints[0].weather);
+        Debug.Log("Time: " + Manager.WeatherDataPoints[0].time);
+        Debug.Log("Temp: " + Manager.WeatherDataPoints[0].temprature);
+        Debug.Log("Prec: " + Manager.WeatherDataPoints[0].precipitation);
+        Debug.Log("Weather: " + Manager.WeatherDataPoints[0].weather);
     }
 }
