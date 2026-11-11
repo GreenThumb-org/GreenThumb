@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 
 public class GetWeatherData
@@ -35,14 +36,14 @@ public class GetWeatherData
             if (ContainsCorrectYear(DatapointsUnfiltered[i], Year))
             {
                 WeatherDataPoint dataPoint = new WeatherDataPoint();
-                string pattern = @"^[^,]+,([^,]+),([^,]+),([^,]+),[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,?""?([^""]+)""?$";
+                string pattern = @"<time=([^>]+)>,<temprature=([^>]+)>,<precipitation=([^>]+)>,<weather=([^>]+)>";
 
                 Match match = Regex.Match(DatapointsUnfiltered[i], pattern);
                 if (match.Success)
                 {
                     dataPoint.time = match.Groups[1].Value;
-                    dataPoint.temprature = float.Parse(match.Groups[2].Value);
-                    dataPoint.precipitation = float.Parse(match.Groups[3].Value);
+                    dataPoint.temprature = float.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+                    dataPoint.precipitation = float.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
                     dataPoint.weather = match.Groups[4].Value;
                 }
                 DataPoints.Add(dataPoint);
@@ -53,7 +54,7 @@ public class GetWeatherData
     private bool ContainsCorrectYear(string DataPoint, int Year)
     {
         if (string.IsNullOrEmpty(DataPoint)) return false;
-        string pattern = $@"\b{Year}\b";
+        string pattern = $@"<time={Year}-";
         return Regex.IsMatch(DataPoint, pattern);
     }
 }
