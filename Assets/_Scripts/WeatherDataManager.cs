@@ -15,25 +15,31 @@ public class WeatherDataManager : MonoBehaviour
     [Tooltip("The year that the weather data gets pulled from")]
     private int SelectedYear = 2010;
 
-    public static WeatherDataManager Manager { get; private set; }
 
-    void Awake()
+    public static WeatherDataManager Manager { get; private set; }
+    public WeatherDataPoint CurrentDataPoint;
+    private void Awake()
     {
         if (Manager != null && Manager != this)
         {
             Destroy(gameObject);
-            return;
         }
         Manager = this;
+        DontDestroyOnLoad(Manager);
     }
-    void Start()
+    private void Start()
     {
         GetWeatherData getWeatherData = new GetWeatherData();
         getWeatherData.GetData(DataFileName, SelectedYear);
-        Debug.Log("<------>");
-        Debug.Log("Time: " + Manager.WeatherDataPoints[0].time);
-        Debug.Log("Temp: " + Manager.WeatherDataPoints[0].temprature);
-        Debug.Log("Prec: " + Manager.WeatherDataPoints[0].precipitation);
-        Debug.Log("Weather: " + Manager.WeatherDataPoints[0].weather);
+        CurrentDataPoint = Manager.WeatherDataPoints[0];
+        StartCoroutine(TimeManager.Manager.StartTime());
+    }
+    public void PrintCurrentDataPoint()
+    {
+        Debug.Log("Time: " + CurrentDataPoint.time);
+        Debug.Log("Temp: " + CurrentDataPoint.temprature);
+        Debug.Log("Precipitation: " + CurrentDataPoint.precipitation);
+        Debug.Log("Weather: " + CurrentDataPoint.weather);
+        Debug.Log("Humidity: " + CurrentDataPoint.humidity);
     }
 }
