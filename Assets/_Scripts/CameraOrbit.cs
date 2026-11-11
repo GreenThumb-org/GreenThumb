@@ -3,13 +3,14 @@ using UnityEngine;
 public class CameraOrbit : MonoBehaviour
 {
     [Header("Target")]
-    [SerializeField] private Transform target; // Drag your Earth object here
+    [SerializeField] private Transform target;
 
     [Header("Orbit Settings")]
     [SerializeField] private float distance = 10f;
     [SerializeField] private float dragSpeed = 0.4f;
-    [SerializeField] private float idleSpinSpeed = 10f; // Minimum continuous spin speed
-    [SerializeField] private float momentumDamping = 5f;  // How fast the momentum slows down
+    [SerializeField] private float idleSpinSpeed = 10f;
+    [SerializeField] private float momentumDamping = 5f;
+    [SerializeField] private float idleDelay = 5f;
 
     [Header("Angle Limits")]
     [SerializeField] private float minVerticalAngle = -50f;
@@ -28,12 +29,12 @@ public class CameraOrbit : MonoBehaviour
 
     private float velocityX = 0f;
     private float velocityY = 0f;
+    private float stopTimer = 0f;
 
     private void Start()
     {
         cam = GetComponent<Camera>();
 
-        // Calculate initial camera angles relative to target
         Vector3 angles = transform.eulerAngles;
         currentX = angles.y;
         currentY = angles.x;
@@ -46,18 +47,19 @@ public class CameraOrbit : MonoBehaviour
 
     private void Update()
     {
-        // Handle Mouse Click and Drag
         if (Input.GetMouseButtonDown(0))
         {
             isDragging = true;
             mouseReference = Input.mousePosition;
             velocityX = 0f;
             velocityY = 0f;
+            stopTimer = 0f;
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             isDragging = false;
+            stopTimer = 0f;
         }
 
         if (isDragging)
@@ -70,11 +72,8 @@ public class CameraOrbit : MonoBehaviour
 
             currentX += deltaX;
             currentY += deltaY;
-
-            // Clamp vertical rotation (pitch)
             currentY = Mathf.Clamp(currentY, minVerticalAngle, maxVerticalAngle);
 
-            // Calculate flick velocity for momentum upon release
             if (Time.deltaTime > 0f)
             {
                 velocityX = deltaX / Time.deltaTime;
@@ -83,16 +82,41 @@ public class CameraOrbit : MonoBehaviour
         }
         else
         {
-            // Apply momentum + minimum idle spin speed, then decay momentum towards 0
-            currentX += (velocityX + idleSpinSpeed) * Time.deltaTime;
-            currentY += velocityY * Time.deltaTime;
-            currentY = Mathf.Clamp(currentY, minVerticalAngle, maxVerticalAngle);
+            if (PinRegionSelection.IsAnyPinHovered)
+            {
+                velocityX = 0f;
+                velocityY = 0f;
+                stopTimer = 0f;
+            }
+            else
+            {
+                currentX += velocityX * Time.deltaTime;
+                currentY += velocityY * Time.deltaTime;
+                currentY = Mathf.Clamp(currentY, minVerticalAngle, maxVerticalAngle);
 
-            velocityX = Mathf.Lerp(velocityX, 0f, momentumDamping * Time.deltaTime);
-            velocityY = Mathf.Lerp(velocityY, 0f, momentumDamping * Time.deltaTime);
+                velocityX = Mathf.Lerp(velocityX, 0f, momentumDamping * Time.deltaTime);
+                velocityY = Mathf.Lerp(velocityY, 0f, momentumDamping * Time.deltaTime);
+
+                bool isMomentumActive = Mathf.Abs(velocityX) > 0.1f || Mathf.Abs(velocityY) > 0.1f;
+
+                if (!isMomentumActive)
+                {
+                    velocityX = 0f;
+                    velocityY = 0f;
+                    stopTimer += Time.deltaTime;
+
+                    if (stopTimer >= idleDelay)
+                    {
+                        currentX += idleSpinSpeed * Time.deltaTime;
+                    }
+                }
+                else
+                {
+                    stopTimer = 0f;
+                }
+            }
         }
 
-        // Handle Scroll Wheel Zoom via Field of View
         float scrollData = Input.GetAxis("Mouse ScrollWheel");
         if (scrollData != 0f && cam != null)
         {
@@ -105,7 +129,6 @@ public class CameraOrbit : MonoBehaviour
     {
         if (target == null) return;
 
-        // Calculate rotation and position around the target
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
         Vector3 position = target.position - (rotation * Vector3.forward * distance);
 
