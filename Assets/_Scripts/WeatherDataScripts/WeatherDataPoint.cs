@@ -6,4 +6,5 @@ public class WeatherDataPoint
     public float temprature;
     public float precipitation;
     public string weather;
+    public float humidity;
 }
