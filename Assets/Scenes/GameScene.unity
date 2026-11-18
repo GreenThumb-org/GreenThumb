@@ -3573,6 +3573,8 @@ Transform:
   - {fileID: 95056948}
   - {fileID: 1270152707}
   - {fileID: 1457176418}
+  - {fileID: 684484782}
+  - {fileID: 1089873413}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &490367699
@@ -3877,6 +3879,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 683191278}
   m_CullTransparentMesh: 1
+--- !u!1 &684484781
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 684484782}
+  - component: {fileID: 684484783}
+  m_Layer: 0
+  m_Name: WeatherDataManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &684484782
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684484781}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 456793963}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &684484783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684484781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a9ed66a81124248aa5b6f861336190, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeatherDataManager
+  DataFileName: ParisWeatherData
+  SelectedYear: 2010
 --- !u!43 &704007824
 Mesh:
   m_ObjectHideFlags: 0
@@ -4119,6 +4167,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 763364575}
+    - target: {fileID: 7607779172123540396, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
+      propertyPath: m_VersionIndex
+      value: 114
+      objectReference: {fileID: 0}
     - target: {fileID: 7700461686364009579, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_Name
       value: Farm (1)
@@ -5410,6 +5462,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1084306020}
   m_CullTransparentMesh: 1
+--- !u!1 &1089873412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1089873413}
+  - component: {fileID: 1089873414}
+  m_Layer: 0
+  m_Name: TimeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1089873413
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1089873412}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 456793963}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1089873414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1089873412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90b5e1e1e2893334a9a4301caa5bd46b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimeManager
+  TimeProgessionSpeed: 0.1
+  TimeProgressionUnit: 1
 --- !u!43 &1159507969
 Mesh:
   m_ObjectHideFlags: 0
@@ -6953,6 +7051,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 860944275}
+    - target: {fileID: 7607779172123540396, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
+      propertyPath: m_VersionIndex
+      value: 114
+      objectReference: {fileID: 0}
     - target: {fileID: 7700461686364009579, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_Name
       value: Farm (2)
@@ -7172,6 +7274,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 1350220153}
+    - target: {fileID: 7607779172123540396, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
+      propertyPath: m_VersionIndex
+      value: 114
+      objectReference: {fileID: 0}
     - target: {fileID: 7700461686364009579, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_Name
       value: Farm (3)
@@ -8132,7 +8238,7 @@ PrefabInstance:
       objectReference: {fileID: 944007015}
     - target: {fileID: 7607779172123540396, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_VersionIndex
-      value: 117
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 7700461686364009579, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_Name

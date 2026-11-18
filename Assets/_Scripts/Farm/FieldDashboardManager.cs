@@ -13,6 +13,8 @@ public class FieldDashboardManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI weatherStatsText;
     [SerializeField] private TextMeshProUGUI warningText;
 
+    private FieldData activeField;
+
     private void Awake()
     {
         closeButton.onClick.AddListener(CloseDashboard);
@@ -30,42 +32,55 @@ public class FieldDashboardManager : MonoBehaviour
 
     private void Update()
     {
-        if (dashboardPanel.activeSelf && Input.GetKeyDown(KeyCode.Escape))
+        if (!dashboardPanel.activeSelf) return;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             CloseDashboard();
+            return;
         }
-    }
 
+        if (activeField != null)
+            RefreshUI();
+    }
     private void OpenDashboard(FieldData data)
     {
-        PopulateData(data);
-        
+        activeField = data;
+        RefreshUI();
+
         dashboardPanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        
+
         TabletManager.OnTabletToggled?.Invoke(true);
     }
 
     public void CloseDashboard()
     {
+        activeField = null;
         dashboardPanel.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        
+
         TabletManager.OnTabletToggled?.Invoke(false);
     }
 
-    private void PopulateData(FieldData data)
+    private void RefreshUI()
     {
-        fieldNameText.text = data.FieldName;
-        cropInfoText.text = $"Crop: {data.CropType}\nStage: {data.GrowthStage}\nHealth: {data.Health:F1}%";
-        soilStatsText.text = $"Moisture: {data.SoilMoisture:F1}%\nNitrogen: {data.NitrogenLevel:F0} kg/ha";
-        weatherStatsText.text = $"Temp: {data.Temperature:F1} °C\nRain 24h: {data.Rainfall:F1} mm";
-        
-        if (data.PestRisk > 30f)
+        fieldNameText.text = activeField.FieldName;
+        cropInfoText.text = $"Crop: {activeField.CropType}\nStage: {activeField.GrowthStage}\nHealth: {activeField.Health:F1}%";
+        soilStatsText.text = $"Moisture: {activeField.SoilMoisture:F1}%\nNitrogen: {activeField.NitrogenLevel:F0} kg/ha";
+
+        WeatherDataPoint currentWeather = WeatherDataManager.Manager != null ? WeatherDataManager.Manager.CurrentDataPoint : null;
+
+        if (currentWeather != null)
+            weatherStatsText.text = $"Condition: {currentWeather.weather}\nTemp: {currentWeather.temprature:F1} °C\nPrecip: {currentWeather.precipitation:F1} mm\nHumidity: {currentWeather.humidity:F0}%";
+        else
+            weatherStatsText.text = "Weather Data Unavailable";
+
+        if (activeField.PestRisk > 30f)
         {
-            warningText.text = $"WARNING: Pest Risk High ({data.PestRisk:F0}%)";
+            warningText.text = $"WARNING: Pest Risk High ({activeField.PestRisk:F0}%)";
             warningText.color = Color.red;
         }
         else
