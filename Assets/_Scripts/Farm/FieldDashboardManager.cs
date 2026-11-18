@@ -1,40 +1,92 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FieldDashboardManager : MonoBehaviour
 {
+    [Header("Panel & Core Controls")]
+
     [SerializeField] private GameObject dashboardPanel;
     [SerializeField] private Button closeButton;
 
-    [SerializeField] private TextMeshProUGUI fieldNameText;
-    [SerializeField] private TextMeshProUGUI cropInfoText;
-    [SerializeField] private TextMeshProUGUI soilStatsText;
-    [SerializeField] private TextMeshProUGUI weatherStatsText;
-    [SerializeField] private TextMeshProUGUI warningText;
+    [Header("Telemetry UI")]
 
+    [SerializeField] private TMP_Text fieldNameText;
+    [SerializeField] private TMP_Text cropInfoText;
+    [SerializeField] private TMP_Text soilStatsText;
+    [SerializeField] private TMP_Text weatherStatsText;
+    [SerializeField] private TMP_Text warningText;
+
+    [Header("Planting Controls")]
+
+    private List<CropSO> availableCrops = new List<CropSO>();
+    [SerializeField] private List<CropSO> excludedCrops = new List<CropSO>();
+    [SerializeField] private TMP_Text cropRequirementsText;
+    [SerializeField] private TMP_Dropdown cropDropdown;
+    [SerializeField] private Button plantButton;
+    private TMP_Text plantButtonText;
+
+    private bool openedThisFrame;
     private FieldData activeField;
+
+    private string resourcesFolderName = "Crops";
 
     private void Awake()
     {
         closeButton.onClick.AddListener(CloseDashboard);
+        plantButton.onClick.AddListener(OnPlantButtonClicked);
+        cropDropdown.onValueChanged.AddListener(OnCropDropdownChanged);
+        LoadCardsFromResources();
+        PopulateCropDropdown();
+        plantButtonText = plantButton.GetComponentInChildren<TMP_Text>();
+    }
+
+    private void OnCropDropdownChanged(int index)
+    {
+        if (activeField != null && !activeField.HasActiveCrop)
+            RefreshUI();
+    }
+
+    private void LoadCardsFromResources()
+    {
+        CropSO[] loadedCards = Resources.LoadAll<CropSO>(resourcesFolderName);
+
+        foreach (CropSO c in loadedCards)
+        {
+            if (excludedCrops.Contains(c))
+                continue;
+
+            availableCrops.Add(c);
+        }
+
+        Debug.Log($"[CardManager] Automatically loaded {availableCrops.Count} cards");
     }
 
     private void OnEnable()
     {
         PlayerInteraction.OnFieldInteracted += OpenDashboard;
+        PlayerInteraction.OnFieldLookAway += HandleLookAway;
     }
 
     private void OnDisable()
     {
         PlayerInteraction.OnFieldInteracted -= OpenDashboard;
+        PlayerInteraction.OnFieldLookAway -= HandleLookAway;
     }
 
     private void Update()
     {
-        if (!dashboardPanel.activeSelf) return;
+        if (!dashboardPanel.activeSelf)
+            return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (openedThisFrame)
+        {
+            openedThisFrame = false;
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
         {
             CloseDashboard();
             return;
@@ -43,9 +95,29 @@ public class FieldDashboardManager : MonoBehaviour
         if (activeField != null)
             RefreshUI();
     }
+
+    private void HandleLookAway()
+    {
+        if (dashboardPanel.activeSelf)
+            CloseDashboard();
+    }
+
+    private void PopulateCropDropdown()
+    {
+        cropDropdown.ClearOptions();
+        List<string> options = new List<string>();
+
+        for (int i = 0; i < availableCrops.Count; i++)
+            options.Add(availableCrops[i].CropName);
+
+        cropDropdown.AddOptions(options);
+        cropDropdown.RefreshShownValue();
+    }
+
     private void OpenDashboard(FieldData data)
     {
         activeField = data;
+        openedThisFrame = true;
         RefreshUI();
 
         dashboardPanel.SetActive(true);
@@ -65,10 +137,44 @@ public class FieldDashboardManager : MonoBehaviour
         TabletManager.OnTabletToggled?.Invoke(false);
     }
 
+    private void OnPlantButtonClicked()
+    {
+        if (activeField == null || activeField.HasActiveCrop || availableCrops.Count == 0) return;
+
+        CropSO selectedCrop = availableCrops[cropDropdown.value];
+        if (activeField.TryPlantCrop(selectedCrop))
+            RefreshUI();
+    }
+
     private void RefreshUI()
     {
         fieldNameText.text = activeField.FieldName;
-        cropInfoText.text = $"Crop: {activeField.CropType}\nStage: {activeField.GrowthStage}\nHealth: {activeField.Health:F1}%";
+        CropSO displayedCrop = null;
+
+        if (activeField.HasActiveCrop)
+        {
+            displayedCrop = activeField.ActiveCrop;
+            cropInfoText.text = $"Crop: {activeField.CropType}\nStage: {activeField.GrowthStage} ({activeField.GrowthProgress:F0}%)\nHealth: {activeField.Health:F1}%";
+            plantButton.interactable = false;
+            cropDropdown.interactable = false;
+            plantButtonText.text = "Field Occupied";
+        }
+        else
+        {
+            if (availableCrops.Count > 0)
+                displayedCrop = availableCrops[cropDropdown.value];
+
+            cropInfoText.text = "Crop: Fallow (Empty)\nStage: Ready for Seeding\nHealth: --";
+            plantButton.interactable = availableCrops.Count > 0;
+            cropDropdown.interactable = availableCrops.Count > 0;
+            plantButtonText.text = "Plant Selected Crop";
+        }
+
+        if (displayedCrop != null)
+            cropRequirementsText.text = displayedCrop.GetFormattedRequirements();
+        else
+            cropRequirementsText.text = "No crop requirements available.";
+
         soilStatsText.text = $"Moisture: {activeField.SoilMoisture:F1}%\nNitrogen: {activeField.NitrogenLevel:F0} kg/ha";
 
         WeatherDataPoint currentWeather = WeatherDataManager.Manager != null ? WeatherDataManager.Manager.CurrentDataPoint : null;
@@ -93,5 +199,7 @@ public class FieldDashboardManager : MonoBehaviour
     private void OnDestroy()
     {
         closeButton.onClick.RemoveListener(CloseDashboard);
+        plantButton.onClick.RemoveListener(OnPlantButtonClicked);
+        cropDropdown.onValueChanged.RemoveListener(OnCropDropdownChanged);
     }
 }

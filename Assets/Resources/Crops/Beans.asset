@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4adc08c6f093db5459fd675e78aaaecb, type: 3}
+  m_Name: Beans
+  m_EditorClassIdentifier: Assembly-CSharp::CropSO
+  cropName: Beans
+  cropPrefab: {fileID: 1777768659258936508, guid: 214d8cdcb59f34f4f94d87e8bb16479c, type: 3}
+  growthDurationHours: 2
+  nitrogenConsumptionPerHour: 0.2
+  waterConsumptionPerHour: 0.3
+  climateType: Warm Temeratur
+  optimalTempRangeC: {x: 18, y: 26}
+  preferredSoil: Clay Loam
+  optimalMoistureRange: {x: 40, y: 65}
+  requiredNitrogenKgHa: 110
+  growingRequirements: Frost-sensitive. Needs full sun and steady moisture during
+    flowering; avoids waterlogged soil.
