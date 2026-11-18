@@ -114,4 +114,9 @@ public class PinRegionSelection : MonoBehaviour
             locationOverview.SetActive(false);
         }
     }
+
+    public void SaveRegion()
+    {
+        Debug.Log("Region Saved!");
+    }
 }
