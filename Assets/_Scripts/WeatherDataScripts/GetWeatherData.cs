@@ -36,8 +36,7 @@ public class GetWeatherData
             if (ContainsCorrectYear(DatapointsUnfiltered[i], Year))
             {
                 WeatherDataPoint dataPoint = new WeatherDataPoint();
-                string pattern = @"<time=([^>]+)>,<temprature=([^>]+)>,<precipitation=([^>]+)>,<weather=([^>]+)>";
-
+                string pattern = @"<time=([^>]+)>,<temprature=([^>]+)>,<precipitation=([^>]+)>,<weather=([^>]+)>,<humidity=([^>]+)>";
                 Match match = Regex.Match(DatapointsUnfiltered[i], pattern);
                 if (match.Success)
                 {
@@ -45,6 +44,7 @@ public class GetWeatherData
                     dataPoint.temprature = float.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
                     dataPoint.precipitation = float.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
                     dataPoint.weather = match.Groups[4].Value;
+                    dataPoint.humidity = float.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture);
                 }
                 DataPoints.Add(dataPoint);
             }
