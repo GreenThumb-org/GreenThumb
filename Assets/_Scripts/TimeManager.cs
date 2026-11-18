@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class TimeManager : MonoBehaviour
@@ -12,6 +13,9 @@ public class TimeManager : MonoBehaviour
     [Tooltip("The number which has to be reached to get to the next data point")]
     private float TimeProgressionUnit = 1f;
     public static TimeManager Manager;
+    [SerializeField]
+    [Tooltip("When False The game Time is running when true it is stopped")]
+    public bool IsPaused;
     private void Awake()
     {
         if(Manager != null && Manager != this)
@@ -29,22 +33,41 @@ public class TimeManager : MonoBehaviour
 
         while (true)
         {
-            if(TimeCounter >= WeatherDataManager.Manager.WeatherDataPoints.Length)
+            if (!IsPaused)
             {
-                yield break;
-            }else {TimeCounter++;}
-            if(TimeStepCounter >= TimeProgressionUnit)
-            {
-                WeatherDataManager.Manager.CurrentDataPoint = WeatherDataManager.Manager.WeatherDataPoints[TimeCounter];
-                WeatherDataManager.Manager.PrintCurrentDataPoint();
-                TimeStepCounter = 0;
+                if(TimeCounter >= WeatherDataManager.Manager.WeatherDataPoints.Length)
+                {
+                    yield break;
+                }else {TimeCounter++;}
+                if(TimeStepCounter >= TimeProgressionUnit)
+                {
+                    WeatherDataManager.Manager.CurrentDataPoint = WeatherDataManager.Manager.WeatherDataPoints[TimeCounter];
+                    WeatherDataManager.Manager.PrintCurrentDataPoint();
+                    TimeStepCounter = 0;
+                }
+                TimeStepCounter += TimeProgessionSpeed;
+                yield return new WaitForSeconds(1f);
             }
-            TimeStepCounter += TimeProgessionSpeed;
-            yield return new WaitForSeconds(1f);
+            else
+            {
+                yield return null;
+            }
         }
     }
     public void StopTime()
     {
         StopCoroutine(StartTime());
+    }
+    public void ToggleTimeStop()
+    {
+        IsPaused = !IsPaused;
+        if (IsPaused)
+        {
+            Debug.Log("Paused");
+        }
+        else
+        {
+            Debug.Log("Unpaused");
+        }
     }
 }
