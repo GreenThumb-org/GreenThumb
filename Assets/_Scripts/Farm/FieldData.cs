@@ -88,11 +88,13 @@ public class FieldData : MonoBehaviour
         else
             pestRiskPercent = Mathf.Clamp(pestRiskPercent - (0.2f * hoursElapsed), 0f, 100f);
 
+        ApplyStress(weather.temprature, hoursElapsed);
+
+        float stressGrowthFactor = healthPercent <= 0f ? 0f : Mathf.Lerp(0.35f, 1f, healthPercent / 100f);
         float gddEarned = Mathf.Max(0f, weather.temprature - activeCrop.BaseTempC) * (hoursElapsed / 24f);
-        float growthStep = (gddEarned / activeCrop.RequiredGDD) * 100f;
+        float growthStep = (gddEarned / activeCrop.RequiredGDD) * 100f * stressGrowthFactor;
         growthProgressPercent = Mathf.Clamp(growthProgressPercent + growthStep, 0f, 100f);
 
-        ApplyStress(weather.temprature, hoursElapsed);
         UpdateCropVisualScale();
     }
 
@@ -147,15 +149,5 @@ public class FieldData : MonoBehaviour
         return activeCrop.GetStageName(growthProgressPercent);
     }
 
-    private void OnEnable()
-    {
-        if (FieldManager.Instance != null)
-            FieldManager.Instance.RegisterField(this);
-    }
 
-    private void OnDisable()
-    {
-        if (FieldManager.Instance != null)
-            FieldManager.Instance.UnregisterField(this);
-    }
 }
