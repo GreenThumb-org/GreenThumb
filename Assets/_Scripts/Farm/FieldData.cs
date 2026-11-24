@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
-public class FieldData : MonoBehaviour
+public class FieldData : MonoBehaviour, IInteractable
 {
     [Header("Field Identity")]
     [SerializeField] private string fieldName = "Field 01";
@@ -34,6 +34,9 @@ public class FieldData : MonoBehaviour
     public float NitrogenLevel => nitrogenLevelKgHa;
     public float Health => healthPercent;
     public float PestRisk => pestRiskPercent;
+
+    public string TargetName => fieldName;
+    public FieldData ParentField => this;
 
     private void Awake()
     {
@@ -149,5 +152,39 @@ public class FieldData : MonoBehaviour
         return activeCrop.GetStageName(growthProgressPercent);
     }
 
+    public bool CanInteract(HotbarItemSO equippedItem)
+    {
+        if (equippedItem == null)
+            return false;
 
+        switch (equippedItem.ToolType)
+        {
+            case ToolType.Spade:
+            case ToolType.SoilTester:
+            case ToolType.WateringCan:
+            case ToolType.FertilizerSpreader:
+            case ToolType.HandHoe:
+                return true;
+            case ToolType.SeedPacket:
+                return !HasActiveCrop && equippedItem.IsSeed;
+            case ToolType.HarvestTool:
+                return HasActiveCrop && growthProgressPercent >= 100f;
+            default:
+                return false;
+        }
+    }
+
+    public string GetPrompt(HotbarItemSO equippedItem)
+    {
+        string inspectHint = $"[E] Inspect {fieldName}";
+
+        if (equippedItem == null || !CanInteract(equippedItem))
+            return inspectHint;
+
+        return $"[LMB] Use {equippedItem.ItemName}\n{inspectHint}";
+    }
+
+    public void Interact(InteractionContext context)
+    {
+    }
 }
