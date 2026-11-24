@@ -37,7 +37,7 @@ public class FieldDashboardManager : MonoBehaviour
         closeButton.onClick.AddListener(CloseDashboard);
         plantButton.onClick.AddListener(OnPlantButtonClicked);
         cropDropdown.onValueChanged.AddListener(OnCropDropdownChanged);
-        LoadCardsFromResources();
+        LoadDataFromResources();
         PopulateCropDropdown();
         plantButtonText = plantButton.GetComponentInChildren<TMP_Text>();
     }
@@ -48,19 +48,17 @@ public class FieldDashboardManager : MonoBehaviour
             RefreshUI();
     }
 
-    private void LoadCardsFromResources()
+    private void LoadDataFromResources()
     {
-        CropSO[] loadedCards = Resources.LoadAll<CropSO>(resourcesFolderName);
+        CropSO[] loadedData = Resources.LoadAll<CropSO>(resourcesFolderName);
 
-        foreach (CropSO c in loadedCards)
+        foreach (CropSO c in loadedData)
         {
             if (excludedCrops.Contains(c))
                 continue;
 
             availableCrops.Add(c);
         }
-
-        Debug.Log($"[CardManager] Automatically loaded {availableCrops.Count} cards");
     }
 
     private void OnEnable()
