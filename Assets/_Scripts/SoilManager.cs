@@ -24,6 +24,16 @@ public class SoilManager : MonoBehaviour
     cOrganicmatter: 3.2f,
     cCompaction: 1.35f
     );
+    Field Test = new Field(
+    cSoilType: SoilTypes.Sand,
+    cMoisture: 22.5f,
+    cNitrogen: 45.0f,
+    cPhosphorus: 30.0f,
+    cPotasium: 140.0f,
+    cPHValue: 6.8f,
+    cOrganicmatter: 3.2f,
+    cCompaction: 1.35f
+    );
     [Space(2)]
 
     public static SoilManager Manager;
@@ -36,5 +46,9 @@ public class SoilManager : MonoBehaviour
         Manager = this;
         DontDestroyOnLoad(Manager);
     }
-    
+    public void ProgressFields()
+    {
+        Test.ReactToWeather();
+        Test.PrintFieldData();
+    }
 }

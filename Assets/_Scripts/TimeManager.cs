@@ -42,7 +42,8 @@ public class TimeManager : MonoBehaviour
                 if(TimeStepCounter >= TimeProgressionUnit)
                 {
                     WeatherDataManager.Manager.CurrentDataPoint = WeatherDataManager.Manager.WeatherDataPoints[TimeCounter];
-                    WeatherDataManager.Manager.PrintCurrentDataPoint();
+                    // WeatherDataManager.Manager.PrintCurrentDataPoint();
+                    SoilManager.Manager.ProgressFields();
                     TimeStepCounter = 0;
                 }
                 TimeStepCounter += TimeProgessionSpeed;
