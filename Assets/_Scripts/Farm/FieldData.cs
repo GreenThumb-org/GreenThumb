@@ -146,4 +146,16 @@ public class FieldData : MonoBehaviour
 
         return activeCrop.GetStageName(growthProgressPercent);
     }
+
+    private void OnEnable()
+    {
+        if (FieldManager.Instance != null)
+            FieldManager.Instance.RegisterField(this);
+    }
+
+    private void OnDisable()
+    {
+        if (FieldManager.Instance != null)
+            FieldManager.Instance.UnregisterField(this);
+    }
 }
