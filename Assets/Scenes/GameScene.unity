@@ -5016,7 +5016,7 @@ PrefabInstance:
       objectReference: {fileID: 763364575}
     - target: {fileID: 7607779172123540396, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_VersionIndex
-      value: 120
+      value: 123
       objectReference: {fileID: 0}
     - target: {fileID: 7700461686364009579, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_Name
@@ -6308,7 +6308,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -20}
+  m_AnchoredPosition: {x: 0, y: -35.9375}
   m_SizeDelta: {x: 96, y: 11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1084306022
@@ -8439,7 +8439,7 @@ PrefabInstance:
       objectReference: {fileID: 860944275}
     - target: {fileID: 7607779172123540396, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_VersionIndex
-      value: 120
+      value: 123
       objectReference: {fileID: 0}
     - target: {fileID: 7700461686364009579, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_Name
@@ -8662,7 +8662,7 @@ PrefabInstance:
       objectReference: {fileID: 1350220153}
     - target: {fileID: 7607779172123540396, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_VersionIndex
-      value: 120
+      value: 123
       objectReference: {fileID: 0}
     - target: {fileID: 7700461686364009579, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_Name
@@ -9905,12 +9905,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47580d214375c0148ad57146997d9f13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HotbarManager
-  slots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  excludedHotbarSlots: []
   defaultSlotIndex: 0
   itemHoldPoint: {fileID: 1981145205}
 --- !u!1 &2053245476
@@ -10493,7 +10488,7 @@ PrefabInstance:
       objectReference: {fileID: 944007015}
     - target: {fileID: 7607779172123540396, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_VersionIndex
-      value: 126
+      value: 129
       objectReference: {fileID: 0}
     - target: {fileID: 7700461686364009579, guid: e285b7c0b23a9d44281043f12a352836, type: 3}
       propertyPath: m_Name

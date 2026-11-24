@@ -25,4 +25,5 @@ public interface IInteractable
     bool CanInteract(HotbarItemSO equippedItem);
     string GetPrompt(HotbarItemSO equippedItem);
     void Interact(InteractionContext context);
+    float GetInteractionDuration(HotbarItemSO equippedItem);
 }

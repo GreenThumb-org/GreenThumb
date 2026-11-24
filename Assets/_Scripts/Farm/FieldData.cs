@@ -18,11 +18,19 @@ public class FieldData : MonoBehaviour, IInteractable
     [SerializeField] private float plantSpacing = 1.2f;
     [SerializeField] private float edgeMargin = 1f;
 
+    [Header("Soil Preparation")]
+    [SerializeField] private MeshRenderer groundRenderer;
+    [SerializeField] private Material unpreparedMaterial;
+    [SerializeField] private Material preparedMaterial;
+    [SerializeField] private float preparationDuration = 1.5f;
+
     private CropSO activeCrop;
     private float growthProgressPercent;
     private BoxCollider fieldCollider;
     private readonly List<Transform> spawnedCrops = new List<Transform>();
     private Transform spawnedCrop;
+    private bool isPrepared;
+
 
     public CropSO ActiveCrop => activeCrop;
     public string FieldName => fieldName;
@@ -34,18 +42,33 @@ public class FieldData : MonoBehaviour, IInteractable
     public float NitrogenLevel => nitrogenLevelKgHa;
     public float Health => healthPercent;
     public float PestRisk => pestRiskPercent;
-
+    
     public string TargetName => fieldName;
     public FieldData ParentField => this;
+    public bool IsPrepared => isPrepared;
 
     private void Awake()
     {
         fieldCollider = GetComponent<BoxCollider>();
+        if (groundRenderer == null)
+            groundRenderer = GetComponent<MeshRenderer>();
+
+        UpdateGroundVisual();
+    }
+
+    public bool TryPrepareField()
+    {
+        if (HasActiveCrop || isPrepared)
+            return false;
+
+        isPrepared = true;
+        UpdateGroundVisual();
+        return true;
     }
 
     public bool TryPlantCrop(CropSO crop)
     {
-        if (HasActiveCrop || crop == null)
+        if (!isPrepared || HasActiveCrop || crop == null)
             return false;
 
         activeCrop = crop;
@@ -61,9 +84,29 @@ public class FieldData : MonoBehaviour, IInteractable
     {
         activeCrop = null;
         growthProgressPercent = 0f;
+        isPrepared = false;
+        UpdateGroundVisual();
 
         if (spawnedCrop != null)
             Destroy(spawnedCrop.gameObject);
+    }
+
+    private void UpdateGroundVisual()
+    {
+        if (groundRenderer == null)
+            return;
+
+        Material targetMat = isPrepared ? preparedMaterial : unpreparedMaterial;
+        if (targetMat != null)
+            groundRenderer.sharedMaterial = targetMat;
+    }
+
+    public float GetInteractionDuration(HotbarItemSO equippedItem)
+    {
+        if (equippedItem != null && equippedItem.ToolType == ToolType.Spade && !HasActiveCrop && !isPrepared)
+            return preparationDuration;
+
+        return 0f;
     }
 
     public void SimulateWeatherStep(WeatherDataPoint weather, float hoursElapsed = 1f)
@@ -160,13 +203,14 @@ public class FieldData : MonoBehaviour, IInteractable
         switch (equippedItem.ToolType)
         {
             case ToolType.Spade:
+                return !HasActiveCrop && !isPrepared;
             case ToolType.SoilTester:
             case ToolType.WateringCan:
             case ToolType.FertilizerSpreader:
             case ToolType.HandHoe:
                 return true;
             case ToolType.SeedPacket:
-                return !HasActiveCrop && equippedItem.IsSeed;
+                return isPrepared && !HasActiveCrop && equippedItem.IsSeed;
             case ToolType.HarvestTool:
                 return HasActiveCrop && growthProgressPercent >= 100f;
             default:
@@ -178,7 +222,23 @@ public class FieldData : MonoBehaviour, IInteractable
     {
         string inspectHint = $"[E] Inspect {fieldName}";
 
-        if (equippedItem == null || !CanInteract(equippedItem))
+        if (equippedItem == null)
+            return inspectHint;
+
+        if (equippedItem.ToolType == ToolType.Spade)
+        {
+            if (HasActiveCrop)
+                return $"Cannot prepare (Active Crop)\n{inspectHint}";
+            if (isPrepared)
+                return $"Soil Prepared\n{inspectHint}";
+
+            return $"[Hold LMB] Prepare Soil ({equippedItem.ItemName})\n{inspectHint}";
+        }
+
+        if (equippedItem.ToolType == ToolType.SeedPacket && !HasActiveCrop && !isPrepared)
+            return $"Prepare soil with Spade first\n{inspectHint}";
+
+        if (!CanInteract(equippedItem))
             return inspectHint;
 
         return $"[LMB] Use {equippedItem.ItemName}\n{inspectHint}";
@@ -186,5 +246,12 @@ public class FieldData : MonoBehaviour, IInteractable
 
     public void Interact(InteractionContext context)
     {
+        if (context.EquippedItem == null)
+            return;
+
+        if (context.EquippedItem.ToolType == ToolType.Spade)
+            TryPrepareField();
+        else if (context.EquippedItem.ToolType == ToolType.SeedPacket && context.EquippedItem.IsSeed)
+            TryPlantCrop(context.EquippedItem.AssociatedCrop);
     }
 }

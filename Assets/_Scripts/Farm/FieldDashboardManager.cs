@@ -157,12 +157,22 @@ public class FieldDashboardManager : MonoBehaviour
             cropDropdown.interactable = false;
             plantButtonText.text = "Field Occupied";
         }
+        else if (!activeField.IsPrepared)
+        {
+            if (availableCrops.Count > 0)
+                displayedCrop = availableCrops[cropDropdown.value];
+
+            cropInfoText.text = "Crop: Unprepared Soil\nStage: Till with Spade first\nHealth: --";
+            plantButton.interactable = false;
+            cropDropdown.interactable = availableCrops.Count > 0;
+            plantButtonText.text = "Soil Not Prepared";
+        }
         else
         {
             if (availableCrops.Count > 0)
                 displayedCrop = availableCrops[cropDropdown.value];
 
-            cropInfoText.text = "Crop: Fallow (Empty)\nStage: Ready for Seeding\nHealth: --";
+            cropInfoText.text = "Crop: Fallow (Prepared)\nStage: Ready for Seeding\nHealth: --";
             plantButton.interactable = availableCrops.Count > 0;
             cropDropdown.interactable = availableCrops.Count > 0;
             plantButtonText.text = "Plant Selected Crop";
