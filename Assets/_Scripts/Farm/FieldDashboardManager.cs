@@ -37,7 +37,7 @@ public class FieldDashboardManager : MonoBehaviour
         closeButton.onClick.AddListener(CloseDashboard);
         plantButton.onClick.AddListener(OnPlantButtonClicked);
         cropDropdown.onValueChanged.AddListener(OnCropDropdownChanged);
-        LoadCardsFromResources();
+        LoadDataFromResources();
         PopulateCropDropdown();
         plantButtonText = plantButton.GetComponentInChildren<TMP_Text>();
     }
@@ -48,19 +48,17 @@ public class FieldDashboardManager : MonoBehaviour
             RefreshUI();
     }
 
-    private void LoadCardsFromResources()
+    private void LoadDataFromResources()
     {
-        CropSO[] loadedCards = Resources.LoadAll<CropSO>(resourcesFolderName);
+        CropSO[] loadedData = Resources.LoadAll<CropSO>(resourcesFolderName);
 
-        foreach (CropSO c in loadedCards)
+        foreach (CropSO c in loadedData)
         {
             if (excludedCrops.Contains(c))
                 continue;
 
             availableCrops.Add(c);
         }
-
-        Debug.Log($"[CardManager] Automatically loaded {availableCrops.Count} cards");
     }
 
     private void OnEnable()
@@ -159,12 +157,22 @@ public class FieldDashboardManager : MonoBehaviour
             cropDropdown.interactable = false;
             plantButtonText.text = "Field Occupied";
         }
+        else if (!activeField.IsPrepared)
+        {
+            if (availableCrops.Count > 0)
+                displayedCrop = availableCrops[cropDropdown.value];
+
+            cropInfoText.text = "Crop: Unprepared Soil\nStage: Till with Spade first\nHealth: --";
+            plantButton.interactable = false;
+            cropDropdown.interactable = availableCrops.Count > 0;
+            plantButtonText.text = "Soil Not Prepared";
+        }
         else
         {
             if (availableCrops.Count > 0)
                 displayedCrop = availableCrops[cropDropdown.value];
 
-            cropInfoText.text = "Crop: Fallow (Empty)\nStage: Ready for Seeding\nHealth: --";
+            cropInfoText.text = "Crop: Fallow (Prepared)\nStage: Ready for Seeding\nHealth: --";
             plantButton.interactable = availableCrops.Count > 0;
             cropDropdown.interactable = availableCrops.Count > 0;
             plantButtonText.text = "Plant Selected Crop";

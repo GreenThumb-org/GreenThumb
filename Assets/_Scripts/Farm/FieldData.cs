@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
-public class FieldData : MonoBehaviour
+public class FieldData : MonoBehaviour, IInteractable
 {
     [Header("Field Identity")]
     [SerializeField] private string fieldName = "Field 01";
@@ -18,11 +18,19 @@ public class FieldData : MonoBehaviour
     [SerializeField] private float plantSpacing = 1.2f;
     [SerializeField] private float edgeMargin = 1f;
 
+    [Header("Soil Preparation")]
+    [SerializeField] private MeshRenderer groundRenderer;
+    [SerializeField] private Material unpreparedMaterial;
+    [SerializeField] private Material preparedMaterial;
+    [SerializeField] private float preparationDuration = 1.5f;
+
     private CropSO activeCrop;
     private float growthProgressPercent;
     private BoxCollider fieldCollider;
     private readonly List<Transform> spawnedCrops = new List<Transform>();
     private Transform spawnedCrop;
+    private bool isPrepared;
+
 
     public CropSO ActiveCrop => activeCrop;
     public string FieldName => fieldName;
@@ -35,14 +43,32 @@ public class FieldData : MonoBehaviour
     public float Health => healthPercent;
     public float PestRisk => pestRiskPercent;
 
+    public string TargetName => fieldName;
+    public FieldData ParentField => this;
+    public bool IsPrepared => isPrepared;
+
     private void Awake()
     {
         fieldCollider = GetComponent<BoxCollider>();
+        if (groundRenderer == null)
+            groundRenderer = GetComponent<MeshRenderer>();
+
+        UpdateGroundVisual();
+    }
+
+    public bool TryPrepareField()
+    {
+        if (HasActiveCrop || isPrepared)
+            return false;
+
+        isPrepared = true;
+        UpdateGroundVisual();
+        return true;
     }
 
     public bool TryPlantCrop(CropSO crop)
     {
-        if (HasActiveCrop || crop == null)
+        if (!isPrepared || HasActiveCrop || crop == null)
             return false;
 
         activeCrop = crop;
@@ -58,9 +84,29 @@ public class FieldData : MonoBehaviour
     {
         activeCrop = null;
         growthProgressPercent = 0f;
+        isPrepared = false;
+        UpdateGroundVisual();
 
         if (spawnedCrop != null)
             Destroy(spawnedCrop.gameObject);
+    }
+
+    private void UpdateGroundVisual()
+    {
+        if (groundRenderer == null)
+            return;
+
+        Material targetMat = isPrepared ? preparedMaterial : unpreparedMaterial;
+        if (targetMat != null)
+            groundRenderer.sharedMaterial = targetMat;
+    }
+
+    public float GetInteractionDuration(HotbarItemSO equippedItem)
+    {
+        if (equippedItem != null && equippedItem.ToolType == ToolType.Spade && !HasActiveCrop && !isPrepared)
+            return preparationDuration;
+
+        return 0f;
     }
 
     public void SimulateWeatherStep(WeatherDataPoint weather, float hoursElapsed = 1f)
@@ -88,11 +134,13 @@ public class FieldData : MonoBehaviour
         else
             pestRiskPercent = Mathf.Clamp(pestRiskPercent - (0.2f * hoursElapsed), 0f, 100f);
 
+        ApplyStress(weather.temprature, hoursElapsed);
+
+        float stressGrowthFactor = healthPercent <= 0f ? 0f : Mathf.Lerp(0.35f, 1f, healthPercent / 100f);
         float gddEarned = Mathf.Max(0f, weather.temprature - activeCrop.BaseTempC) * (hoursElapsed / 24f);
-        float growthStep = (gddEarned / activeCrop.RequiredGDD) * 100f;
+        float growthStep = (gddEarned / activeCrop.RequiredGDD) * 100f * stressGrowthFactor;
         growthProgressPercent = Mathf.Clamp(growthProgressPercent + growthStep, 0f, 100f);
 
-        ApplyStress(weather.temprature, hoursElapsed);
         UpdateCropVisualScale();
     }
 
@@ -104,10 +152,7 @@ public class FieldData : MonoBehaviour
             return;
         }
 
-        bool isStressed = currentTempC > activeCrop.HeatStressTempC ||
-                          soilMoisturePercent < activeCrop.OptimalMoistureRange.x ||
-                          soilMoisturePercent > activeCrop.OptimalMoistureRange.y ||
-                          nitrogenLevelKgHa < activeCrop.RequiredNitrogenKgHa * 0.25f;
+        bool isStressed = currentTempC > activeCrop.HeatStressTempC || soilMoisturePercent < activeCrop.OptimalMoistureRange.x || soilMoisturePercent > activeCrop.OptimalMoistureRange.y || nitrogenLevelKgHa < activeCrop.RequiredNitrogenKgHa * 0.25f;
 
         if (isStressed)
             healthPercent = Mathf.Clamp(healthPercent - (activeCrop.StressHealthPenaltyPerHour * hoursElapsed), 0f, 100f);
@@ -147,15 +192,63 @@ public class FieldData : MonoBehaviour
         return activeCrop.GetStageName(growthProgressPercent);
     }
 
-    private void OnEnable()
+    public bool CanInteract(HotbarItemSO equippedItem)
     {
-        if (FieldManager.Instance != null)
-            FieldManager.Instance.RegisterField(this);
+        if (equippedItem == null)
+            return false;
+
+        switch (equippedItem.ToolType)
+        {
+            case ToolType.Spade:
+                return !HasActiveCrop && !isPrepared;
+            case ToolType.SoilTester:
+            case ToolType.WateringCan:
+            case ToolType.FertilizerSpreader:
+            case ToolType.HandHoe:
+                return true;
+            case ToolType.SeedPacket:
+                return isPrepared && !HasActiveCrop && equippedItem.IsSeed;
+            case ToolType.HarvestTool:
+                return HasActiveCrop && growthProgressPercent >= 100f;
+            default:
+                return false;
+        }
     }
 
-    private void OnDisable()
+    public string GetPrompt(HotbarItemSO equippedItem)
     {
-        if (FieldManager.Instance != null)
-            FieldManager.Instance.UnregisterField(this);
+        string inspectHint = $"[E] Inspect {fieldName}";
+
+        if (equippedItem == null)
+            return inspectHint;
+
+        if (equippedItem.ToolType == ToolType.Spade)
+        {
+            if (HasActiveCrop)
+                return $"Cannot prepare (Active Crop)\n{inspectHint}";
+            if (isPrepared)
+                return $"Soil Prepared\n{inspectHint}";
+
+            return $"[Hold LMB] Prepare Soil ({equippedItem.ItemName})\n{inspectHint}";
+        }
+
+        if (equippedItem.ToolType == ToolType.SeedPacket && !HasActiveCrop && !isPrepared)
+            return $"Prepare soil with Spade first\n{inspectHint}";
+
+        if (!CanInteract(equippedItem))
+            return inspectHint;
+
+        return $"[LMB] Use {equippedItem.ItemName}\n{inspectHint}";
+    }
+
+    public void Interact(InteractionContext context)
+    {
+        if (context.EquippedItem == null)
+            return;
+
+        if (context.EquippedItem.ToolType == ToolType.Spade)
+            TryPrepareField();
+        else if (context.EquippedItem.ToolType == ToolType.SeedPacket && context.EquippedItem.IsSeed)
+            TryPlantCrop(context.EquippedItem.AssociatedCrop);
     }
 }
