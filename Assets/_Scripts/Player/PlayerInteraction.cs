@@ -15,7 +15,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private KeyCode interactKey = KeyCode.Mouse0;
     [SerializeField] private GameObject interactionPrompt;
     [SerializeField] private TMP_Text promptText;
-    [SerializeField] private Image holdProgressBar;
+    [SerializeField] private Slider holdProgressBar;
 
     private Transform cam;
     private IInteractable currentTarget;
@@ -27,11 +27,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Awake()
     {
-        Camera childCam = GetComponentInChildren<Camera>();
-        if (childCam != null)
-            cam = childCam.transform;
-        else if (Camera.main != null)
-            cam = Camera.main.transform;
+        cam = Camera.main.transform;
     }
 
     private void OnEnable()
@@ -182,7 +178,7 @@ public class PlayerInteraction : MonoBehaviour
 
         bool showBar = normalizedProgress > 0f;
         holdProgressBar.gameObject.SetActive(showBar);
-        holdProgressBar.fillAmount = Mathf.Clamp01(normalizedProgress);
+        holdProgressBar.value = Mathf.Clamp01(normalizedProgress);
     }
 
     private void SetPromptVisible(bool visible)

@@ -42,7 +42,7 @@ public class FieldData : MonoBehaviour, IInteractable
     public float NitrogenLevel => nitrogenLevelKgHa;
     public float Health => healthPercent;
     public float PestRisk => pestRiskPercent;
-    
+
     public string TargetName => fieldName;
     public FieldData ParentField => this;
     public bool IsPrepared => isPrepared;
@@ -152,10 +152,7 @@ public class FieldData : MonoBehaviour, IInteractable
             return;
         }
 
-        bool isStressed = currentTempC > activeCrop.HeatStressTempC ||
-                          soilMoisturePercent < activeCrop.OptimalMoistureRange.x ||
-                          soilMoisturePercent > activeCrop.OptimalMoistureRange.y ||
-                          nitrogenLevelKgHa < activeCrop.RequiredNitrogenKgHa * 0.25f;
+        bool isStressed = currentTempC > activeCrop.HeatStressTempC || soilMoisturePercent < activeCrop.OptimalMoistureRange.x || soilMoisturePercent > activeCrop.OptimalMoistureRange.y || nitrogenLevelKgHa < activeCrop.RequiredNitrogenKgHa * 0.25f;
 
         if (isStressed)
             healthPercent = Mathf.Clamp(healthPercent - (activeCrop.StressHealthPenaltyPerHour * hoursElapsed), 0f, 100f);

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5827739505448739206}
   - component: {fileID: 6030578516075784406}
   - component: {fileID: 3328307686885641102}
+  - component: {fileID: 5593675622203343694}
   m_Layer: 6
   m_Name: Field
   m_TagString: Untagged
@@ -371,11 +372,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FieldData
   fieldName: Field 01
-  cropType: Wheat
-  growthStage: Seedling
   soilMoisturePercent: 45
   nitrogenLevelKgHa: 120
   healthPercent: 95
   pestRiskPercent: 10
-  temperatureC: 22
-  rainfallMm: 5
+  rowSpacing: 1.5
+  plantSpacing: 1.2
+  edgeMargin: 1
+  groundRenderer: {fileID: 1417282794095935091}
+  unpreparedMaterial: {fileID: 2100000, guid: af6806163a9880746b6f06f1d86eb151, type: 2}
+  preparedMaterial: {fileID: 2100000, guid: a76434ea1da703e4cb4ec9f19efdbbff, type: 2}
+  preparationDuration: 1.5
+--- !u!65 &5593675622203343694
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7700461686364009579}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
