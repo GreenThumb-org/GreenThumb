@@ -59,11 +59,13 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         TabletManager.OnTabletToggled += HandleMenuToggle;
+        GuideBook.OnBookToggled += HandleMenuToggle;
     }
 
     private void OnDisable()
     {
         TabletManager.OnTabletToggled -= HandleMenuToggle;
+        GuideBook.OnBookToggled -= HandleMenuToggle;
     }
 
     private void Update()

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class GuideBook : MonoBehaviour
 {
     public static GuideBook Instance { get; private set; }
+    public static Action<bool> OnBookToggled;
 
     [Serializable]
     public struct BookPage
@@ -25,10 +26,9 @@ public class GuideBook : MonoBehaviour
         public int endPage;
     }
 
-    [Header("Book Visibility & First Person")]
+    [Header("Book Visibility")]
     [SerializeField] private GameObject bookRoot;
     [SerializeField] private KeyCode toggleKey = KeyCode.B;
-    [SerializeField] private MonoBehaviour[] firstPersonScriptsToDisable;
 
     [Header("UI References")]
     [SerializeField] private TMP_Text topicText;
@@ -92,6 +92,21 @@ public class GuideBook : MonoBehaviour
         {
             Instance = null;
         }
+
+        if (leftButton != null)
+        {
+            leftButton.onClick.RemoveListener(PreviousPage);
+        }
+
+        if (rightButton != null)
+        {
+            rightButton.onClick.RemoveListener(NextPage);
+        }
+
+        if (closeButton != null)
+        {
+            closeButton.onClick.RemoveListener(CloseBook);
+        }
     }
 
     private void OnValidate()
@@ -154,19 +169,9 @@ public class GuideBook : MonoBehaviour
             bookRoot.SetActive(isOpen);
         }
 
-        if (firstPersonScriptsToDisable != null)
-        {
-            for (int i = 0; i < firstPersonScriptsToDisable.Length; i++)
-            {
-                if (firstPersonScriptsToDisable[i] != null)
-                {
-                    firstPersonScriptsToDisable[i].enabled = !isOpen;
-                }
-            }
-        }
-
-        Cursor.visible = isOpen;
         Cursor.lockState = isOpen ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = isOpen;
+        OnBookToggled?.Invoke(isOpen);
 
         if (isOpen)
         {

@@ -2859,7 +2859,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1477011166}
+  - {fileID: 1198624108}
   - {fileID: 2053245477}
   - {fileID: 1621982735}
   - {fileID: 1322360885}
@@ -3962,6 +3962,7 @@ Transform:
   - {fileID: 1457176418}
   - {fileID: 684484782}
   - {fileID: 1089873413}
+  - {fileID: 1477011166}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &490367699
@@ -6669,7 +6670,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1198624108
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6685,7 +6686,7 @@ RectTransform:
   - {fileID: 249542030}
   - {fileID: 89392107}
   - {fileID: 1419164659}
-  m_Father: {fileID: 1477011166}
+  m_Father: {fileID: 262911077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -7190,17 +7191,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TabletManager
   tabletPanel: {fileID: 1953033489}
   closeButton: {fileID: 2120569841}
---- !u!114 &1301012567 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3346258719086374069, guid: 988090fc9fb65b14b8e4bbd3d8520472, type: 3}
-  m_PrefabInstance: {fileID: 8191031400986421523}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 675d71c6ef7869c44ac154f0ca999add, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1 &1322360884
 GameObject:
   m_ObjectHideFlags: 0
@@ -7640,18 +7630,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1477011165}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3.2, y: 3.2, z: 3.2}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1198624108}
-  m_Father: {fileID: 262911077}
+  m_Children: []
+  m_Father: {fileID: 456793963}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 1280, y: 720}
+  m_SizeDelta: {x: 800, y: 450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1477011167
 MonoBehaviour:
@@ -7667,8 +7656,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GuideBook
   bookRoot: {fileID: 1198624107}
   toggleKey: 98
-  firstPersonScriptsToDisable:
-  - {fileID: 1301012567}
   topicText: {fileID: 1117422777}
   infoText: {fileID: 1178692409}
   pageCounterText: {fileID: 1528191305}
@@ -7680,7 +7667,7 @@ MonoBehaviour:
   firstChapterPosition: {x: 175, y: 175}
   yStep: -50
   chapters:
-  - chapterName: "\U0001F96C"
+  - chapterName: Salod
     tabColor: {r: 1, g: 0, b: 0, a: 0.9019608}
     startPage: 1
     endPage: 2
